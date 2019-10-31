@@ -1,3 +1,4 @@
+// Package bufsize implements a plugin that modifies EDNS0 buffer size.
 package bufsize
 
 import (
@@ -8,7 +9,7 @@ import (
 	"github.com/miekg/dns"
 )
 
-// Bufsize plugin
+// Bufsize implements bufsize plugin.
 type Bufsize struct {
 	Next plugin.Handler
 	Size int
