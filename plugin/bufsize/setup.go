@@ -25,13 +25,13 @@ func setup(c *caddy.Controller) error {
 }
 
 func bufsizeParse(c *caddy.Controller) (int, error) {
+	const defaultBufSize = 512
 	for c.Next() {
 		args := c.RemainingArgs()
 		switch len(args) {
 		case 0:
 			// Nothing specified; use 512 as default
-			bufsize := 512
-			return bufsize, nil
+			return defaultBufSize, nil
 		case 1:
 			// Specified value is needed to verify
 			bufsize, err := strconv.Atoi(args[0])
