@@ -50,7 +50,7 @@ func TestBufsize(t *testing.T) {
 			req.SetEdns0(tc.inputBufsize, false)
 		}
 
-		_, err := em.ServeDNS(context.TODO(), &test.ResponseWriter{}, req)
+		_, err := em.ServeDNS(context.Background(), &test.ResponseWriter{}, req)
 
 		if err != tc.expectedErr {
 			t.Errorf("Test %d: Expected error is %v, but got %v", i, tc.expectedErr, err)
