@@ -12,7 +12,7 @@ import (
 func init() { plugin.Register("bufsize", setup) }
 
 func setup(c *caddy.Controller) error {
-	bufsize, err := bufsizeParse(c)
+	bufsize, err := parse(c)
 	if err != nil {
 		return plugin.Error("bufsize", err)
 	}
@@ -24,7 +24,7 @@ func setup(c *caddy.Controller) error {
 	return nil
 }
 
-func bufsizeParse(c *caddy.Controller) (int, error) {
+func parse(c *caddy.Controller) (int, error) {
 	const defaultBufSize = 512
 	for c.Next() {
 		args := c.RemainingArgs()
