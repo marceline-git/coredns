@@ -23,7 +23,7 @@ func TestSetupBufsize(t *testing.T) {
 
 	for i, test := range tests {
 		c := caddy.NewTestController("dns", test.input)
-		bufsize, err := bufsizeParse(c)
+		bufsize, err := parse(c)
 
 		if test.shouldErr && err == nil {
 			t.Errorf("Test %d: Expected error but found %s for input %s", i, err, test.input)
