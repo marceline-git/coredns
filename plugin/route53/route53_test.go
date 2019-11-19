@@ -44,6 +44,8 @@ func (fakeRoute53) ListResourceRecordSetsPagesWithContext(_ aws.Context, in *rou
 		{"SOA", "org.", "ns-1536.awsdns-00.co.uk. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400", "1234567890"},
 		{"NS", "com.", "ns-1536.awsdns-00.co.uk.", "1234567890"},
 		{"A", "split-example.gov.", "1.2.3.4", "1234567890"},
+		// Overlapped domain name which has a different type.
+		{"MX", "other-example.org.", "0 mail.example.org.", "1234567890"},
 		// Unsupported type should be ignored.
 		{"YOLO", "swag.", "foobar", "1234567890"},
 		// Hosted zone with the same name, but a different id.
@@ -224,6 +226,12 @@ func TestRoute53(t *testing.T) {
 				"a.www.example.org.	300	IN	CNAME	www.example.org.",
 				"www.example.org.	300	IN	A	1.2.3.4",
 			},
+		},
+		// 14. Check the next zone even the overlapped domain name returns NODATA.
+		{
+			qname: "other-example.org.",
+			qtype: dns.TypeMX,
+			wantAnswer: []string{"other-example.org.	300	IN	MX	0 mail.example.org."},
 		},
 	}
 

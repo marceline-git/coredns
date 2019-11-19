@@ -117,16 +117,26 @@ func (h *Route53) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg
 	m.SetReply(r)
 	m.Authoritative = true
 	var result file.Result
+
+	tmpMsg := new(dns.Msg)
+	var tmpResult file.Result
+	isNodata := false
+
 	for _, hostedZone := range z {
 		h.zMu.RLock()
 		m.Answer, m.Ns, m.Extra, result = hostedZone.z.Lookup(ctx, state, qname)
 		h.zMu.RUnlock()
 
-		// Take the answer if it's non-empty OR if there is another
-		// record type exists for this name (NODATA).
-		if len(m.Answer) != 0 || result == file.NoData {
+		if len(m.Answer) != 0 {
 			break
+		} else if result != file.NameError {
+			tmpMsg.Answer, tmpMsg.Ns, tmpMsg.Extra, tmpResult = m.Answer, m.Ns, m.Extra, result
+			isNodata = true
 		}
+	}
+
+	if isNodata && result != file.Success {
+		m.Answer, m.Ns, m.Extra, result = tmpMsg.Answer, tmpMsg.Ns, tmpMsg.Extra, tmpResult
 	}
 
 	if len(m.Answer) == 0 && result != file.NoData && h.Fall.Through(qname) {
